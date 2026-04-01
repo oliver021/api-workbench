@@ -1,0 +1,373 @@
+openapi: "3.0.0"
+info:
+  title: Petstore API
+  version: "1.0.0"
+  description: A sample API that uses a petstore as an example to demonstrate features of the OpenAPI specification.
+servers:
+  - url: https://petstore.swagger.io/v2
+    description: Production server
+  - url: https://petstore.swagger.io/v3
+    description: Development server
+
+tags:
+  - name: pets
+    description: Operations about pets
+  - name: store
+    description: Operations about the store
+  - name: users
+    description: Operations about users
+
+paths:
+  /pets:
+    get:
+      tags:
+        - pets
+      summary: List all pets
+      operationId: listPets
+      description: Returns a paginated list of pets.
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of pets to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          description: Number of pets to skip
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: A list of pets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Pet"
+                  total:
+                    type: integer
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - pets
+      summary: Create a pet
+      operationId: createPet
+      description: Creates a new pet in the store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetInput"
+      responses:
+        "201":
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /pets/{petId}:
+    get:
+      tags:
+        - pets
+      summary: Get a pet by ID
+      operationId: getPetById
+      description: Returns a single pet by ID.
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: ID of the pet to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pet details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "404":
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - pets
+      summary: Update a pet
+      operationId: updatePet
+      description: Updates an existing pet.
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: ID of the pet to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetInput"
+      responses:
+        "200":
+          description: Pet updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "404":
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - pets
+      summary: Delete a pet
+      operationId: deletePet
+      description: Deletes a pet by ID.
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: ID of the pet to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Pet deleted
+        "404":
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /store/order:
+    post:
+      tags:
+        - store
+      summary: Place an order
+      operationId: placeOrder
+      description: Places an order for a pet.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /store/order/{orderId}:
+    get:
+      tags:
+        - store
+      summary: Get an order by ID
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create a user
+      operationId: createUser
+      description: Creates a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get user by ID
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        name:
+          type: string
+          description: Pet name
+        status:
+          type: string
+          enum:
+            - available
+            - pending
+            - sold
+          description: Pet availability status
+        tag:
+          type: string
+          description: Pet category
+
+    PetInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - available
+            - pending
+            - sold
+        tag:
+          type: string
+
+    Order:
+      type: object
+      required:
+        - petId
+        - quantity
+      properties:
+        id:
+          type: string
+        petId:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        status:
+          type: string
+          enum:
+            - placed
+            - approved
+            - delivered
+        placedAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - username
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
