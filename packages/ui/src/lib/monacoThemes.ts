@@ -1,12 +1,21 @@
-export interface MonacoThemeDefinition {
-  base: 'vs' | 'vs-dark' | 'hc-black' | 'hc-light';
-  inherit: boolean;
-  rules: { token: string; foreground?: string; fontStyle?: string }[];
-  colors: Record<string, string>;
+import { loader } from '@monaco-editor/react';
+import type { Monaco } from '@monaco-editor/react';
+
+let initialized = false;
+
+export async function getMonaco(): Promise<Monaco> {
+  if (initialized) {
+    return (window as unknown as { monaco: Monaco }).monaco;
+  }
+
+  const monaco = await loader.init();
+  registerThemes(monaco);
+  initialized = true;
+  return monaco;
 }
 
-export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
-  'tokyo-night': {
+function registerThemes(monaco: Monaco): void {
+  monaco.editor.defineTheme('tokyo-night', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -22,7 +31,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'property', foreground: '73daca' },
       { token: 'operator', foreground: '89ddff' },
       { token: 'delimiter', foreground: 'a9b1d6' },
-      { token: 'delimiter.bracket', foreground: '89ddff' },
     ],
     colors: {
       'editor.background': '#1a1b26',
@@ -32,10 +40,10 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorCursor.foreground': '#c0caf5',
       'editorLineNumber.foreground': '#3b4261',
       'editorLineNumber.activeForeground': '#7aa2f7',
-      'editor.inactiveSelectionBackground': '#3b426140',
     },
-  },
-  'dracula': {
+  });
+
+  monaco.editor.defineTheme('dracula', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -50,7 +58,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'constant', foreground: 'bd93f9' },
       { token: 'property', foreground: '66d9ef' },
       { token: 'operator', foreground: 'ff79c6' },
-      { token: 'delimiter', foreground: 'f8f8f2' },
     ],
     colors: {
       'editor.background': '#282a36',
@@ -61,8 +68,9 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorLineNumber.foreground': '#6272a4',
       'editorLineNumber.activeForeground': '#f8f8f2',
     },
-  },
-  'one-dark-pro': {
+  });
+
+  monaco.editor.defineTheme('one-dark-pro', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -77,7 +85,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'constant', foreground: 'd19a66' },
       { token: 'property', foreground: '56b6c2' },
       { token: 'operator', foreground: '56b6c2' },
-      { token: 'delimiter', foreground: 'abb2bf' },
     ],
     colors: {
       'editor.background': '#282c34',
@@ -88,8 +95,9 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorLineNumber.foreground': '#4b5263',
       'editorLineNumber.activeForeground': '#abb2bf',
     },
-  },
-  'catppuccin-mocha': {
+  });
+
+  monaco.editor.defineTheme('catppuccin-mocha', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -104,7 +112,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'constant', foreground: 'fab387' },
       { token: 'property', foreground: '94e2d5' },
       { token: 'operator', foreground: '89dceb' },
-      { token: 'delimiter', foreground: 'cdd6f4' },
     ],
     colors: {
       'editor.background': '#1e1e2e',
@@ -115,8 +122,9 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorLineNumber.foreground': '#45475a',
       'editorLineNumber.activeForeground': '#cdd6f4',
     },
-  },
-  'nord': {
+  });
+
+  monaco.editor.defineTheme('nord', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -131,7 +139,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'constant', foreground: 'ebcb8b' },
       { token: 'property', foreground: '8fbcbb' },
       { token: 'operator', foreground: '81a1c1' },
-      { token: 'delimiter', foreground: 'eceff4' },
     ],
     colors: {
       'editor.background': '#2e3440',
@@ -142,8 +149,9 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorLineNumber.foreground': '#4c566a',
       'editorLineNumber.activeForeground': '#eceff4',
     },
-  },
-  'monokai': {
+  });
+
+  monaco.editor.defineTheme('monokai', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -158,7 +166,6 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       { token: 'constant', foreground: 'ae81ff' },
       { token: 'property', foreground: '66d9ef' },
       { token: 'operator', foreground: 'f92672' },
-      { token: 'delimiter', foreground: 'f8f8f2' },
     ],
     colors: {
       'editor.background': '#272822',
@@ -169,23 +176,5 @@ export const MONACO_THEMES: Record<string, MonacoThemeDefinition> = {
       'editorLineNumber.foreground': '#75715e',
       'editorLineNumber.activeForeground': '#f8f8f2',
     },
-  },
-};
-
-let themesRegistered = false;
-
-export async function registerMonacoThemes(): Promise<void> {
-  if (themesRegistered) return;
-
-  const { loader } = await import('@monaco-editor/react');
-  await loader.init();
-
-  const monaco = (window as unknown as { monaco?: { editor: { defineTheme: (name: string, def: MonacoThemeDefinition) => void } } }).monaco;
-
-  if (monaco) {
-    for (const [name, def] of Object.entries(MONACO_THEMES)) {
-      monaco.editor.defineTheme(name, def);
-    }
-    themesRegistered = true;
-  }
+  });
 }

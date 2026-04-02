@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useSpec } from '@/hooks/useSpec';
 import { Header } from './Header';
@@ -6,9 +7,22 @@ import { useAppStore } from '@/stores/appStore';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
+interface SourceInfo {
+  source: string;
+  sourceType: string;
+}
+
 export function Layout() {
   const { data: spec, isLoading, error } = useSpec();
   const { sidebarCollapsed } = useAppStore();
+  const [sourceInfo, setSourceInfo] = useState<SourceInfo | null>(null);
+
+  useEffect(() => {
+    fetch('/api/source')
+      .then((r) => r.json())
+      .then((data) => setSourceInfo(data))
+      .catch(() => {});
+  }, []);
 
   if (isLoading) {
     return (
@@ -33,7 +47,7 @@ export function Layout() {
 
   return (
     <div className="flex flex-col h-screen">
-      <Header spec={spec} />
+      <Header spec={spec} sourceInfo={sourceInfo} />
       <div className="flex flex-1 overflow-hidden">
         {!sidebarCollapsed && <Sidebar endpoints={spec.endpoints} />}
         <main className={cn('flex-1 overflow-y-auto', sidebarCollapsed && 'ml-0')}>

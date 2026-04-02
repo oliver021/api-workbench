@@ -42,12 +42,13 @@ export function ThemeSelector() {
         className={cn(
           'flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm',
           'hover:bg-accent transition-colors border',
-          'border-transparent hover:border-border'
+          'border-transparent hover:border-border',
+          'w-[130px] justify-center'
         )}
         title="Change theme"
       >
-        <Palette className="w-4 h-4 text-muted-foreground" />
-        <span className="hidden sm:inline">{currentTheme.name}</span>
+        <Palette className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <span className="hidden sm:inline truncate">{currentTheme.name}</span>
       </button>
 
       {open && (

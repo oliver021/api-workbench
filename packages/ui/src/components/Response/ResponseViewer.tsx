@@ -1,6 +1,6 @@
 import { useAppStore } from '@/stores/appStore';
 import { StatusBadge } from './StatusBadge';
-import { cn } from '@/lib/utils';
+import { JsonViewer } from './JsonViewer';
 import { AlertCircle } from 'lucide-react';
 
 export function ResponseViewer() {
@@ -72,17 +72,7 @@ export function ResponseViewer() {
       )}
 
       <div className="p-4">
-        <pre
-          className={cn(
-            'text-sm font-mono overflow-x-auto p-3 bg-card rounded border',
-            'max-h-[500px] overflow-y-auto'
-          )}
-          spellCheck={false}
-        >
-          {typeof response.body === 'string'
-            ? response.body
-            : JSON.stringify(response.body, null, 2)}
-        </pre>
+        <JsonViewer value={response.body} className="max-h-[500px]" />
       </div>
     </div>
   );

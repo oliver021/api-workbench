@@ -45,7 +45,8 @@ function findUiDist(): string | undefined {
   const candidates = [
     path.join(process.cwd(), 'dist'),
     path.join(process.cwd(), '../ui/dist'),
-    path.join(__dirname, '../../ui/dist'),
+    path.join(process.cwd(), '../../ui/dist'),
+    path.join(process.cwd(), 'packages/ui/dist'),
   ];
 
   for (const candidate of candidates) {
